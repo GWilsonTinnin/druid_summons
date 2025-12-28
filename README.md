@@ -21,8 +21,8 @@ Druids of the Circle of the Shepherd commune with the spirits of nature, especia
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/GWilsonTinnin/shepherds-guide.git
-   cd shepherds-guide
+   git clone https://github.com/GWilsonTinnin/shepherds-guide-5e.git
+   cd shepherds-guide-5e
    ```
 
 2. Create and activate a virtual environment:
