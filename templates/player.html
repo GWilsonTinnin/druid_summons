@@ -5,6 +5,30 @@
     <meta charset="UTF-8">
     <title>Player Character Sheet</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .section-header {
+            background-color: #495057;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.25rem;
+            margin-bottom: 1rem;
+            margin-top: 1.5rem;
+        }
+        .class-feature-item {
+            padding: 0.75rem;
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            margin-bottom: 0.5rem;
+        }
+        .class-feature-item:hover {
+            background-color: #f8f9fa;
+        }
+        .feature-description {
+            font-size: 0.85em;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+    </style>
 </head>
 
 <body class="bg-light">
@@ -19,6 +43,8 @@
         </ul>
         
         <form method="post" class="row g-3">
+            <!-- Basic Info -->
+            <h5 class="section-header col-12">Basic Information</h5>
             <div class="col-md-4">
                 <label class="form-label">Name</label>
                 <input type="text" class="form-control" name="name" value="{{ character['name'] }}">
@@ -51,6 +77,9 @@
                 <label class="form-label">Experience</label>
                 <input type="number" class="form-control" name="experience" value="{{ character['experience'] }}">
             </div>
+            
+            <!-- Ability Scores -->
+            <h5 class="section-header col-12">Ability Scores</h5>
             <div class="col-md-2">
                 <label class="form-label">Strength</label>
                 <input type="number" class="form-control" name="strength" value="{{ character['strength'] }}">
@@ -75,6 +104,9 @@
                 <label class="form-label">Charisma</label>
                 <input type="number" class="form-control" name="charisma" value="{{ character['charisma'] }}">
             </div>
+            
+            <!-- Combat Stats -->
+            <h5 class="section-header col-12">Combat Stats</h5>
             <div class="col-md-2">
                 <label class="form-label">Max HP</label>
                 <input type="number" class="form-control" name="max_hp" value="{{ character['max_hp'] }}">
@@ -99,6 +131,9 @@
                 <label class="form-label">Inspiration</label>
                 <input type="text" class="form-control" name="inspiration" value="{{ character['inspiration'] }}">
             </div>
+            
+            <!-- Skills & Proficiencies -->
+            <h5 class="section-header col-12">Skills & Proficiencies</h5>
             <div class="col-12">
                 <label class="form-label">Skills</label>
                 <textarea class="form-control" name="skills">{{ character['skills'] }}</textarea>
@@ -109,18 +144,70 @@
             </div>
             <div class="col-12">
                 <label class="form-label">Features</label>
-                <textarea class="form-control" name="features">{{ character['features'] }}</textarea>
+                <textarea class="form-control" name="features" rows="3">{{ character['features'] }}</textarea>
             </div>
+            
+            <!-- Class Features for Summoning -->
+            <h5 class="section-header col-12">Summoning Class Features</h5>
+            <p class="col-12 text-muted">These features will automatically modify your summoned creatures.</p>
+            
+            <div class="col-md-4">
+                <div class="class-feature-item">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="mighty_summoner" id="mighty_summoner" 
+                               {% if character.class_features.mighty_summoner %}checked{% endif %}>
+                        <label class="form-check-label fw-bold" for="mighty_summoner">
+                            Mighty Summoner
+                        </label>
+                    </div>
+                    <div class="feature-description">
+                        Circle of the Shepherd (Druid 6th). Summoned beasts/fey gain +2 HP per Hit Die.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="class-feature-item">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="guardian_spirit" id="guardian_spirit"
+                               {% if character.class_features.guardian_spirit %}checked{% endif %}>
+                        <label class="form-check-label fw-bold" for="guardian_spirit">
+                            Guardian Spirit
+                        </label>
+                    </div>
+                    <div class="feature-description">
+                        Circle of the Shepherd (Druid 10th). Summoned creatures gain half your Druid level in HP when summoned.
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="class-feature-item">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="faithful_summons" id="faithful_summons"
+                               {% if character.class_features.faithful_summons %}checked{% endif %}>
+                        <label class="form-check-label fw-bold" for="faithful_summons">
+                            Faithful Summons
+                        </label>
+                    </div>
+                    <div class="feature-description">
+                        Circle of the Shepherd (Druid 14th). If reduced to 0 HP, summon 4 beasts of CR 2 or lower.
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Equipment & Spells -->
+            <h5 class="section-header col-12">Equipment & Spells</h5>
             <div class="col-12">
                 <label class="form-label">Equipment</label>
-                <textarea class="form-control" name="equipment">{{ character['equipment'] }}</textarea>
+                <textarea class="form-control" name="equipment" rows="3">{{ character['equipment'] }}</textarea>
             </div>
             <div class="col-12">
                 <label class="form-label">Spells</label>
-                <textarea class="form-control" name="spells">{{ character['spells'] }}</textarea>
+                <textarea class="form-control" name="spells" rows="3">{{ character['spells'] }}</textarea>
             </div>
-            <div class="col-12">
-                <button type="submit" class="btn btn-primary">Save</button>
+            <div class="col-12 mt-4">
+                <button type="submit" class="btn btn-primary btn-lg">Save Character</button>
                 <a class="btn btn-secondary" href="{{ url_for('index') }}">Back to Monster List</a>
             </div>
         </form>

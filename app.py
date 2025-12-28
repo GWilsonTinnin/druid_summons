@@ -10,6 +10,41 @@ app.secret_key = os.environ.get('SECRET_KEY', os.urandom(24).hex())
 
 SRD_MONSTERS_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data', 'srd_5e_monsters.json'))
 SPELLS_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data', 'spells.json'))
+PLAYER_DATA_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), 'data', 'player_data.json'))
+
+# Default player data structure
+DEFAULT_PLAYER_DATA = {
+    "name": "",
+    "race": "",
+    "class": "",
+    "subclass": "",
+    "level": 1,
+    "background": "",
+    "alignment": "",
+    "experience": 0,
+    "strength": 10,
+    "dexterity": 10,
+    "constitution": 10,
+    "intelligence": 10,
+    "wisdom": 10,
+    "charisma": 10,
+    "max_hp": 0,
+    "current_hp": 0,
+    "ac": 10,
+    "speed": "30 ft",
+    "proficiency_bonus": 2,
+    "inspiration": 0,
+    "skills": "",
+    "saving_throws": "",
+    "features": "",
+    "equipment": "",
+    "spells": "",
+    "class_features": {
+        "mighty_summoner": False,
+        "guardian_spirit": False,
+        "faithful_summons": False
+    }
+}
 
 # Conjuring spells that summon creatures
 CONJURE_SPELL_NAMES = [
@@ -42,6 +77,31 @@ def load_srd_monsters():
 def load_spells():
     with open(SPELLS_PATH, 'r') as f:
         return json.load(f)
+
+def load_player_data():
+    """Load player data from JSON file, creating it if it doesn't exist."""
+    if os.path.exists(PLAYER_DATA_PATH):
+        with open(PLAYER_DATA_PATH, 'r') as f:
+            data = json.load(f)
+            # Merge with defaults to ensure all fields exist
+            merged = copy.deepcopy(DEFAULT_PLAYER_DATA)
+            merged.update(data)
+            # Ensure class_features dict is complete
+            if 'class_features' in data:
+                merged['class_features'] = copy.deepcopy(DEFAULT_PLAYER_DATA['class_features'])
+                merged['class_features'].update(data.get('class_features', {}))
+            return merged
+    return copy.deepcopy(DEFAULT_PLAYER_DATA)
+
+def save_player_data(data):
+    """Save player data to JSON file."""
+    with open(PLAYER_DATA_PATH, 'w') as f:
+        json.dump(data, f, indent=4)
+
+def get_player_class_features():
+    """Get the player's active class features that affect summoning."""
+    player = load_player_data()
+    return player.get('class_features', {})
 
 def get_conjure_spells():
     """Load and return only the conjuring/summoning spells."""
@@ -231,6 +291,7 @@ def set_summoner_info():
 
 @app.route('/player', methods=['GET', 'POST'])
 def player():
+    """Display and update player character sheet, persisted to JSON file."""
     fields = [
         'name', 'race', 'class', 'subclass', 'level',
         'background', 'alignment', 'experience',
@@ -239,10 +300,38 @@ def player():
         'proficiency_bonus', 'inspiration',
         'skills', 'saving_throws', 'features', 'equipment', 'spells'
     ]
+    
+    # Class features that affect summoning
+    class_feature_fields = ['mighty_summoner', 'guardian_spirit', 'faithful_summons']
+    
     if request.method == 'POST':
+        # Load existing data to preserve structure
+        character = load_player_data()
+        
+        # Update basic fields
         for field in fields:
-            session[field] = request.form.get(field, '')
-    character = {field: session.get(field, '') for field in fields}
+            value = request.form.get(field, '')
+            # Convert numeric fields
+            if field in ['level', 'experience', 'strength', 'dexterity', 'constitution', 
+                        'intelligence', 'wisdom', 'charisma', 'max_hp', 'current_hp', 
+                        'ac', 'proficiency_bonus', 'inspiration']:
+                try:
+                    value = int(value) if value else 0
+                except ValueError:
+                    value = 0
+            character[field] = value
+        
+        # Update class features (checkboxes)
+        for feature in class_feature_fields:
+            character['class_features'][feature] = request.form.get(feature) == 'on'
+        
+        # Save to JSON file
+        save_player_data(character)
+        
+        return redirect(url_for('player'))
+    
+    # Load character data from JSON file
+    character = load_player_data()
     return render_template('player.html', character=character)
 
 @app.route('/spells')

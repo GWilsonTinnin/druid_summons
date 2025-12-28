@@ -1,0 +1,32 @@
+{
+    "name": "Sereig Wumuo",
+    "race": "Harengon",
+    "class": "Shepherd Druid / Monk",
+    "subclass": "",
+    "level": 9,
+    "background": "Hermit",
+    "alignment": "Chaotic Good",
+    "experience": 0,
+    "strength": 10,
+    "dexterity": 10,
+    "constitution": 10,
+    "intelligence": 10,
+    "wisdom": 10,
+    "charisma": 10,
+    "max_hp": 0,
+    "current_hp": 0,
+    "ac": 10,
+    "speed": "30 ft",
+    "proficiency_bonus": 2,
+    "inspiration": 0,
+    "skills": "",
+    "saving_throws": "",
+    "features": "",
+    "equipment": "",
+    "spells": "",
+    "class_features": {
+        "mighty_summoner": false,
+        "guardian_spirit": false,
+        "faithful_summons": false
+    }
+}
